@@ -83,11 +83,21 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Export AWS env for kubectl
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_REGION=${{ env.AWS_REGION }}" >> $GITHUB_ENV
        
       - name: Get Kubeconfig file
         id: getconfig
         if: steps.apply.outcome == 'success'
         run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }}
+
+      - name: Verify cluster
+        id: verify
+        run: kubectl get nodes
 
       - name: Install Ingress controller
         if: steps.apply.outcome == 'success' && steps.getconfig.outcome == 'success'
