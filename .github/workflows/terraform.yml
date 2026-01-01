@@ -90,7 +90,7 @@ jobs:
         run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }}
 
       - name: Install Ingress controller
-        if: steps.apply.outcome == 'success' && steps.getconfig.outcome == 'sucess'
+        if: steps.apply.outcome == 'success' && steps.getconfig.outcome == 'success'
         run: kubectl apply https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.1/deploy/static/provider/cloud/deploy.yaml
       
  
