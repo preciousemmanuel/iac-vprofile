@@ -90,6 +90,11 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+      - name: Export AWS env for kubectl
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_REGION=${{ env.AWS_REGION }}" >> $GITHUB_ENV
 
       - name: Install kubectl
         uses: azure/setup-kubectl@v3
@@ -98,7 +103,7 @@ jobs:
 
       - name: Update kubeconfig
         id: getconfig
-        if: steps.apply.outcome == 'success'
+        #if: steps.apply.outcome == 'success'
         run: |
           mkdir -p ~/.kube
           aws eks update-kubeconfig \
@@ -115,11 +120,11 @@ jobs:
 
       - name: Verify cluster
         id: verify
-        if: steps.getconfig.outcome == 'success'
+       # if: steps.getconfig.outcome == 'success'
         run: kubectl get nodes
 
       - name: Install Ingress controller
-        if: steps.apply.outcome == 'success' && steps.getconfig.outcome == 'success'
+        #if: steps.apply.outcome == 'success' && steps.getconfig.outcome == 'success'
         run: |
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.1/deploy/static/provider/cloud/deploy.yaml --validate=false
       
